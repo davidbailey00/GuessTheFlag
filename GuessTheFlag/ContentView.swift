@@ -19,24 +19,37 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            Color.blue.edgesIgnoringSafeArea(.all)
+            LinearGradient(
+                gradient: Gradient(colors: [.blue, .pink]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/ .all/*@END_MENU_TOKEN@*/)
 
-            VStack(spacing: 32) {
+            VStack {
                 VStack {
-                    Text("Tap the flag of: \(countries[correctAnswer])")
+                    Text("Tap the flag of:")
+                    Text(countries[correctAnswer])
+                        .font(.largeTitle)
+                        .fontWeight(.black)
                 }
 
-                ForEach(0 ..< 3) { number in
-                    Button(action: {
-                        self.flagTapped(number)
-                    }) {
-                        Image(self.countries[number])
-                            .renderingMode(.original)
+                VStack(spacing: 32) {
+                    ForEach(0 ..< 3) { number in
+                        Button(action: {
+                            self.flagTapped(number)
+                        }) {
+                            Image(self.countries[number])
+                                .renderingMode(.original)
+                        }
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .shadow(color: .black, radius: 2, x: 0, y: 2)
                     }
                 }
 
                 Spacer()
             }
+            .padding()
         }
         .foregroundColor(.white)
         .alert(isPresented: $showingScore, content: {
