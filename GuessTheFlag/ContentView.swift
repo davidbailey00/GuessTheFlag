@@ -32,13 +32,12 @@ struct ContentView: View {
                 HStack {
                     Text("Tap the flag of:")
                     Text(countries[correctAnswer])
-                        .font(.largeTitle)
                         .fontWeight(.black)
                 }
 
                 Spacer()
 
-                VStack(spacing: 32) {
+                VStack(spacing: 48) {
                     ForEach(0 ..< 3) { number in
                         Button(action: {
                             self.flagTapped(number)
@@ -55,9 +54,7 @@ struct ContentView: View {
 
                 HStack {
                     Text("Your score:")
-                    Text("\(score)")
-                        .font(.largeTitle)
-                        .fontWeight(.black)
+                    Text("\(score)").fontWeight(.black)
                 }
             }
             .padding()
