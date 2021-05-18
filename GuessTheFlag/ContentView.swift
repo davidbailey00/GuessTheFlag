@@ -14,8 +14,10 @@ struct ContentView: View {
     ].shuffled()
     @State private var correctAnswer = Int.random(in: 0 ... 2)
 
-    @State private var showingScore = false
-    @State private var scoreTitle = ""
+    @State private var score = 0
+    @State private var showingAlert = false
+    @State private var alertTitle = ""
+    @State private var alertMessage = ""
 
     var body: some View {
         ZStack {
@@ -24,15 +26,17 @@ struct ContentView: View {
                 startPoint: .top,
                 endPoint: .bottom
             )
-            .edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/ .all/*@END_MENU_TOKEN@*/)
+            .edgesIgnoringSafeArea(.all)
 
             VStack {
-                VStack {
+                HStack {
                     Text("Tap the flag of:")
                     Text(countries[correctAnswer])
                         .font(.largeTitle)
                         .fontWeight(.black)
                 }
+
+                Spacer()
 
                 VStack(spacing: 32) {
                     ForEach(0 ..< 3) { number in
@@ -42,20 +46,27 @@ struct ContentView: View {
                             Image(self.countries[number])
                                 .renderingMode(.original)
                         }
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                         .shadow(color: .black, radius: 2, x: 0, y: 2)
                     }
                 }
 
                 Spacer()
+
+                HStack {
+                    Text("Your score:")
+                    Text("\(score)")
+                        .font(.largeTitle)
+                        .fontWeight(.black)
+                }
             }
             .padding()
         }
         .foregroundColor(.white)
-        .alert(isPresented: $showingScore, content: {
+        .alert(isPresented: $showingAlert, content: {
             Alert(
-                title: Text(scoreTitle),
-                message: Text("Your score is ???"),
+                title: Text(alertTitle),
+                message: Text(alertMessage),
                 dismissButton: .default(Text("Continue")) {
                     self.nextQuestion()
                 }
@@ -65,11 +76,13 @@ struct ContentView: View {
 
     func flagTapped(_ number: Int) {
         if number == correctAnswer {
-            scoreTitle = "Correct"
+            score += 1
+            alertTitle = "Correct"
         } else {
-            scoreTitle = "Wrong"
+            alertTitle = "Incorrect"
         }
-        showingScore = true
+        alertMessage = "You chose \(countries[number])"
+        showingAlert = true
     }
 
     func nextQuestion() {
