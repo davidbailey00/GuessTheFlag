@@ -39,14 +39,9 @@ struct ContentView: View {
 
                 VStack(spacing: 48) {
                     ForEach(0 ..< 3) { number in
-                        Button(action: {
+                        FlagButton(flag: self.countries[number]) {
                             self.flagTapped(number)
-                        }) {
-                            Image(self.countries[number])
-                                .renderingMode(.original)
                         }
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .shadow(color: .black, radius: 2, x: 0, y: 2)
                     }
                 }
 
@@ -85,6 +80,20 @@ struct ContentView: View {
     func nextQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0 ... 2)
+    }
+}
+
+struct FlagButton: View {
+    var flag: String
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(flag)
+                .renderingMode(.original)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .shadow(color: .black, radius: 2, x: 0, y: 2)
     }
 }
 
