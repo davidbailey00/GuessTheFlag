@@ -9,7 +9,9 @@ import SwiftUI
 
 enum FlagEffect {
     case spin
+    case fall
     case fadeOut
+    case enlarge
 }
 
 struct ContentView: View {
@@ -83,11 +85,13 @@ struct ContentView: View {
             score += 1
             alertTitle = "Correct"
         } else {
+            flagEffects[number] = .fall
+            flagEffects[correctAnswer] = .enlarge
             alertTitle = "Incorrect"
         }
+        alertMessage = "You chose \(countries[number])"
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            alertMessage = "You chose \(countries[number])"
             showingAlert = true
         }
     }
@@ -104,6 +108,21 @@ struct FlagButton: View {
     let effect: FlagEffect?
     let action: () -> Void
 
+    var animation: Animation? {
+        switch effect {
+        case .spin:
+            return .spring()
+        case .fall:
+            return .spring()
+        case .fadeOut:
+            return .default
+        case .enlarge:
+            return .easeOut
+        default:
+            return nil
+        }
+    }
+
     var body: some View {
         Button(action: action) {
             Image(flag)
@@ -116,8 +135,13 @@ struct FlagButton: View {
             effect == .spin ? .degrees(360) : .zero,
             axis: (x: 0, y: 1, z: 0)
         )
+        .rotation3DEffect(
+            effect == .fall ? .degrees(-105) : .zero,
+            axis: (x: 1, y: 0, z: 0)
+        )
         .opacity(effect == .fadeOut ? 0.25 : 1)
-        .animation(effect == nil ? nil : .default)
+        .scaleEffect(effect == .enlarge ? 1.25 : 1)
+        .animation(animation)
     }
 }
 
