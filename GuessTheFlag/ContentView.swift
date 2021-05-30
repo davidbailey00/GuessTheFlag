@@ -7,12 +7,18 @@
 
 import SwiftUI
 
+enum FlagEffect {
+    case spin
+    case fadeOut
+}
+
 struct ContentView: View {
     @State private var countries = [
         "Estonia", "France", "Germany", "Ireland", "Italy", "Monaco",
         "Nigeria", "Poland", "Russia", "Spain", "UK", "US"
     ].shuffled()
     @State private var correctAnswer = Int.random(in: 0 ... 2)
+    @State private var flagEffects: [FlagEffect?] = [nil, nil, nil]
 
     @State private var score = 0
     @State private var showingAlert = false
@@ -39,7 +45,10 @@ struct ContentView: View {
 
                 VStack(spacing: 48) {
                     ForEach(0 ..< 3) { number in
-                        FlagButton(flag: self.countries[number]) {
+                        FlagButton(
+                            flag: self.countries[number],
+                            effect: flagEffects[number]
+                        ) {
                             self.flagTapped(number)
                         }
                     }
@@ -67,17 +76,24 @@ struct ContentView: View {
     }
 
     func flagTapped(_ number: Int) {
+        flagEffects = [.fadeOut, .fadeOut, .fadeOut]
+
         if number == correctAnswer {
+            flagEffects[number] = .spin
             score += 1
             alertTitle = "Correct"
         } else {
             alertTitle = "Incorrect"
         }
-        alertMessage = "You chose \(countries[number])"
-        showingAlert = true
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            alertMessage = "You chose \(countries[number])"
+            showingAlert = true
+        }
     }
 
     func nextQuestion() {
+        flagEffects = [nil, nil, nil]
         countries.shuffle()
         correctAnswer = Int.random(in: 0 ... 2)
     }
@@ -85,6 +101,7 @@ struct ContentView: View {
 
 struct FlagButton: View {
     let flag: String
+    let effect: FlagEffect?
     let action: () -> Void
 
     var body: some View {
@@ -94,6 +111,13 @@ struct FlagButton: View {
         }
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black, radius: 2, x: 0, y: 2)
+        .disabled(effect != nil)
+        .rotation3DEffect(
+            effect == .spin ? .degrees(360) : .zero,
+            axis: (x: 0, y: 1, z: 0)
+        )
+        .opacity(effect == .fadeOut ? 0.25 : 1)
+        .animation(effect == nil ? nil : .default)
     }
 }
 
