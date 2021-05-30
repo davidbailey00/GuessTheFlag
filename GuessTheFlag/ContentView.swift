@@ -84,8 +84,8 @@ struct ContentView: View {
 }
 
 struct FlagButton: View {
-    var flag: String
-    var action: () -> Void
+    let flag: String
+    let action: () -> Void
 
     var body: some View {
         Button(action: action) {
